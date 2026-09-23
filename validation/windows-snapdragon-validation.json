@@ -1,0 +1,38 @@
+{
+  "environment": {
+    "validation_environment": "CONTAINER / NON-TARGET",
+    "target_platform": "Snapdragon X Series (Qualcomm Oryon CPU / Hexagon NPU)",
+    "target_architecture": "Windows 11 ARM64 (AArch64)",
+    "os": "Linux (POSIX container)",
+    "architecture": "x86_64",
+    "processor": "AuthenticAMD x86_64 Processor",
+    "processor_manufacturer": "Advanced Micro Devices (AMD)",
+    "hardware_platform": "Other"
+  },
+  "onnx_runtime": {
+    "installed": false,
+    "version": null,
+    "providers": [
+      "CPUExecutionProvider"
+    ]
+  },
+  "qnn": {
+    "execution_provider": "UNAVAILABLE",
+    "libraries": {
+      "QnnHtp.dll": "NOT CONFIGURED",
+      "QnnHtpPrepare.dll": "NOT CONFIGURED",
+      "QnnSystem.dll": "NOT CONFIGURED"
+    }
+  },
+  "model_validation": {
+    "model": "DBNet / MobileNetV4 OCR",
+    "found": false,
+    "validated": false,
+    "actual_backend": null,
+    "latency_ms": null
+  },
+  "fallback": {
+    "cpu_available": true,
+    "tested": true
+  }
+}

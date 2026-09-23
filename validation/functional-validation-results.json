@@ -1,0 +1,416 @@
+{
+  "timestamp": "2026-09-23T10:09:46.976Z",
+  "suiteName": "TraceShield AI 2.0 Functional Validation & Security Test Harness",
+  "totalTests": 29,
+  "passedCount": 29,
+  "failedCount": 0,
+  "limitationCount": 0,
+  "allPassed": true,
+  "tests": [
+    {
+      "id": "TS-001",
+      "name": "Clean technical evidence",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "ALLOW, 0 findings, sanitization: null, release: ALLOWED, copy: ENABLED",
+      "actual": "ALLOW, 0 findings, sanitization: null, release: ALLOWED, copy: ENABLED",
+      "details": "Evaluates benign code with zero sensitive patterns through pre-filter to fast allow release.",
+      "relevantModule": "src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-002",
+      "name": "Credential targeting Public AI",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Decision: SANITIZE, Sensitive finding: SECRET, Sanitization: executed, Verification: PASS, Release: ALLOWED",
+      "actual": "Decision: SANITIZE, Findings: 1, Sanitized: true, VerifPassed: true, Release: ALLOWED, HardRule: Hard Rule 3: Credential targeting Public AI Tool (Mandatory Sanitize)",
+      "details": "Findings: SECRET present (true). Sanitization executed (true). Verification passed (true). Hard rule returned: Hard Rule 3: Credential targeting Public AI Tool (Mandatory Sanitize). Final Decision: SANITIZE, Release: ALLOWED.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-003",
+      "name": "Critical credential targeting Public GitHub",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Decision: BLOCK, Verification: PASS, Release: BLOCKED, Copy: DISABLED",
+      "actual": "Decision: BLOCK, Verification: PASS, Release: BLOCKED, Copy: DISABLED",
+      "details": "Demonstrates key security invariant: Verification PASS does NOT allow release when risk decision is BLOCK.",
+      "relevantModule": "src/risk/engine.ts, src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-004",
+      "name": "Internal destination context",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Destination multiplier 0.6x, Score ~68.4, Decision: SANITIZE, Release: ALLOWED",
+      "actual": "Multiplier: 0.6x, Score: 68.4, Decision: SANITIZE, Release: ALLOWED",
+      "details": "Proves destination exposure multiplier modulates the risk score and enables sanitized release for internal targets.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-005",
+      "name": "Local IDE destination awareness",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Destination multiplier 0.2x, Score ~22.8, Decision: ALLOW, Release: ALLOWED",
+      "actual": "Multiplier: 0.2x, Score: 22.8, Decision: ALLOW, Release: ALLOWED",
+      "details": "Validates destination awareness: exact same sensitive token produces ALLOW when targeting local development tool.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-006",
+      "name": "Governance policy variation",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Scores vary by policy: CyberLab (0.8x) < CloudOps (1.2x) < OpenSource (1.5x)",
+      "actual": "CyberLab: 45.6 (REVIEW) | CloudOps: 68.4 (SANITIZE) | OpenSource: 85.5 (BLOCK)",
+      "details": "Proves policy profile modifier directly modulates the composite risk calculation without changing content.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-007",
+      "name": "Verification failure and release hold",
+      "suite": "Deterministic Matrix",
+      "status": "PASS",
+      "expected": "Verification: FAILED, Residual detected: YES, Raw token bleed: YES, Failure reason populated",
+      "actual": "Passed: false, NoSecrets: false, NoBleed: false, Reason: \"Residual secrets detected: AWS_ACCESS_KEY [REDACTED_RESIDUAL_SECRET] | Pre-sanitization raw token bleed detected\"",
+      "details": "Tests closed-loop quarantine: verifier independently catches residual credentials and raw token bleed.",
+      "relevantModule": "src/verification/verifier.ts"
+    },
+    {
+      "id": "TS-008",
+      "name": "Data contract separation (Transient raw_value isolation)",
+      "suite": "Data Contract Separation",
+      "status": "PASS",
+      "expected": "raw_value strictly excluded from findings_metadata, telemetry, and safe_mappings",
+      "actual": "Raw in metadata: false, Raw in telemetry: false, Raw in safe_mappings: false",
+      "details": "Asserts that Layer B (SensitiveMatch.raw_value) is transient in-memory only and never serialized to Layer A public interfaces.",
+      "relevantModule": "src/types.ts, src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-009",
+      "name": "FindingMetadata structure and safety",
+      "suite": "Data Contract Separation",
+      "status": "PASS",
+      "expected": "Structural metadata present, zero sensitive string leak in serialized metadata",
+      "actual": "Structural fields: OK, Leaks secret: false",
+      "details": "Verifies FindingMetadata can be safely logged, audited, or displayed without secret disclosure.",
+      "relevantModule": "src/detection/registry.ts"
+    },
+    {
+      "id": "TS-010",
+      "name": "Multi-category entity replacement",
+      "suite": "Sanitization",
+      "status": "PASS",
+      "expected": "IP, Host, Email, and Credential replaced with typed replacement tokens",
+      "actual": "IP: true, Host: true, Email: true, Secret: true",
+      "details": "Verifies sanitizer correctly applies distinct categories of replacement tokens across diverse sensitive entities.",
+      "relevantModule": "src/sanitization/sanitizer.ts"
+    },
+    {
+      "id": "TS-011",
+      "name": "Relational mapping consistency for repeated entities",
+      "suite": "Sanitization",
+      "status": "PASS",
+      "expected": "Repeated entity (10.20.14.5) consistently receives [INTERNAL_IP_1] in both positions",
+      "actual": "IP_1 count: 2, IP_2 count: 1, Relational map: OK",
+      "details": "Ensures relational correlation is maintained for debugging without leaking real IPs.",
+      "relevantModule": "src/sanitization/sanitizer.ts"
+    },
+    {
+      "id": "TS-012",
+      "name": "Surrounding text preservation (Zero offset corruption)",
+      "suite": "Sanitization",
+      "status": "PASS",
+      "expected": "Exact preservation of surrounding prefixes, separators, and suffixes",
+      "actual": "Prefix: true, Middle: true, Suffix: true",
+      "details": "Right-to-left surgical splice guarantees downstream replacement does not displace preceding text offsets.",
+      "relevantModule": "src/sanitization/sanitizer.ts"
+    },
+    {
+      "id": "TS-013",
+      "name": "Independent rescan catches residual secrets",
+      "suite": "Independent Verification",
+      "status": "PASS",
+      "expected": "passed: false, no_residual_secrets: false",
+      "actual": "passed: false, no_residual_secrets: false",
+      "details": "Closed-loop verifier treats sanitizer output as untrusted and rescans with detector registry.",
+      "relevantModule": "src/verification/verifier.ts"
+    },
+    {
+      "id": "TS-014",
+      "name": "Pre-sanitization raw token bleed detection",
+      "suite": "Independent Verification",
+      "status": "PASS",
+      "expected": "passed: false, no_raw_tokens_bleed: false, leak_detected: true",
+      "actual": "passed: false, no_raw_tokens_bleed: false, leak_detected: true",
+      "details": "Cross-checks every key from original token map against final text to guarantee zero bleed.",
+      "relevantModule": "src/verification/verifier.ts"
+    },
+    {
+      "id": "TS-015",
+      "name": "Residual high Shannon entropy anomaly check",
+      "suite": "Independent Verification",
+      "status": "PASS",
+      "expected": "passed: false, no_entropy_anomalies: false",
+      "actual": "passed: false, no_entropy_anomalies: false, violations: 1",
+      "details": "Flags statistical entropy anomalies >= 4.8 Shannon score on unredacted strings >= 24 chars.",
+      "relevantModule": "src/verification/verifier.ts, src/core/entropy.ts"
+    },
+    {
+      "id": "TS-016",
+      "name": "Release Gate: Non-BLOCK + Verification PASS -> RELEASE ALLOWED",
+      "suite": "Release Gating",
+      "status": "PASS",
+      "expected": "release_status: ALLOWED, verified_safe_text: populated",
+      "actual": "release_status: ALLOWED, verified_safe_text: YES",
+      "details": "When risk decision is non-BLOCK and verification passes, content is released.",
+      "relevantModule": "src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-017",
+      "name": "Release Gate: BLOCK + Verification PASS -> RELEASE BLOCKED",
+      "suite": "Release Gating",
+      "status": "PASS",
+      "expected": "release_status: BLOCKED, verified_safe_text: null (BLOCK overrides Verifier PASS)",
+      "actual": "status: BLOCK, verifPassed: true, release: BLOCKED, copy: DISABLED",
+      "details": "CRITICAL SECURITY INVARIANT: Verification PASS must NEVER override a policy BLOCK decision.",
+      "relevantModule": "src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-018",
+      "name": "Destination awareness 4-point matrix",
+      "suite": "Destination Awareness",
+      "status": "PASS",
+      "expected": "LOCAL_IDE (0.2x) < INTERNAL_SYSTEM (0.6x) < PUBLIC_AI (1.2x) < PUBLIC_GITHUB (1.6x)",
+      "actual": "LOCAL_IDE: 0.2x (Score 22.8, ALLOW) | INTERNAL_SYSTEM: 0.6x (Score 68.4, SANITIZE) | PUBLIC_AI: 1.2x (Score 100, SANITIZE) | PUBLIC_GITHUB: 1.6x (Score 100, BLOCK)",
+      "details": "Demonstrates that destination exposure context reaches the risk engine and scales mathematical risk scores.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-019",
+      "name": "DEMO-1: Production Server Log executes real pipeline",
+      "suite": "Demo Scenarios",
+      "status": "PASS",
+      "expected": "Status: BLOCK, Release: BLOCKED, Findings >= 3",
+      "actual": "Status: BLOCK, Release: BLOCKED, Findings: 7",
+      "details": "Multi-leak log executes real pipeline without hardcoded bypass.",
+      "relevantModule": "src/components/DemoScenarios.tsx, src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-020",
+      "name": "DEMO-2: Terminal Screenshot OCR stream executes real pipeline",
+      "suite": "Demo Scenarios",
+      "status": "PASS",
+      "expected": "Status: SANITIZE, Findings > 0, Release: ALLOWED (Hard Rule 3 Public AI)",
+      "actual": "Status: SANITIZE, Findings: 10, Release: ALLOWED",
+      "details": "OCR screenshot buffer processed through real detection and risk pipeline to mandatory sanitization.",
+      "relevantModule": "src/components/DemoScenarios.tsx, src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-021",
+      "name": "DEMO-3: Clean Benchmark Code fast-allow path",
+      "suite": "Demo Scenarios",
+      "status": "PASS",
+      "expected": "Status: ALLOW, Release: ALLOWED, Findings: 0",
+      "actual": "Status: ALLOW, Release: ALLOWED, Findings: 0",
+      "details": "Tests benign algorithmic code through early-exit fast allow path.",
+      "relevantModule": "src/components/DemoScenarios.tsx, src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-022",
+      "name": "DEMO-4: Verification Hold Injection evaluation",
+      "suite": "Demo Scenarios",
+      "status": "PASS",
+      "expected": "Decision reaches sanitization/verification, Verifier detects failure (passed=false), Release: VERIFICATION HOLD, Copy: DISABLED",
+      "actual": "RiskStatus: SANITIZE, VerifPassed: false, Release: VERIFICATION HOLD, Copy: DISABLED",
+      "details": "DEMO-4 executed through full pipeline: Decision=SANITIZE, Sanitization=true, Verifier executed=true, Verifier passed=false, Failure reason=\"Residual secrets detected: SYNTHETIC_DEMO_KEY [REDACTED_RESIDUAL_SECRET] | Pre-sanitization raw token bleed detected\", Release=VERIFICATION HOLD",
+      "relevantModule": "src/components/DemoScenarios.tsx, src/sanitization/sanitizer.ts, src/verification/verifier.ts"
+    },
+    {
+      "id": "TS-023",
+      "name": "Hard Rule 1: Private Key to External Destination",
+      "suite": "Hard Security Rules",
+      "status": "PASS",
+      "expected": "Hard Decision: BLOCK, Rule: \"Hard Rule 1: Private Key targeting Public Destination (Mandatory Block)\"",
+      "actual": "GitHub: BLOCK (\"Hard Rule 1: Private Key targeting Public Destination (Mandatory Block)\"), AI: BLOCK",
+      "details": "Tests deterministic hard invariant: Private keys to external endpoints always mandate BLOCK.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-024",
+      "name": "Hard Rule 2: High-Severity Secret to Public GitHub",
+      "suite": "Hard Security Rules",
+      "status": "PASS",
+      "expected": "Hard Decision: SANITIZE, Rule: \"Hard Rule 2: Critical Credential targeting Public GitHub...\"",
+      "actual": "Decision: SANITIZE, Rule: \"Hard Rule 2: Critical Credential targeting Public GitHub (Mandatory Sanitize/Block)\"",
+      "details": "Validates Hard Rule 2 trigger on critical credentials targeting public repositories.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-025",
+      "name": "Hard Rule 3: Credential targeting Public AI Tool",
+      "suite": "Hard Security Rules",
+      "status": "PASS",
+      "expected": "Hard Decision: SANITIZE, Rule: \"Hard Rule 3: Credential targeting Public AI Tool (Mandatory Sanitize)\"",
+      "actual": "Decision: SANITIZE, Rule: \"Hard Rule 3: Credential targeting Public AI Tool (Mandatory Sanitize)\"",
+      "details": "Validates Hard Rule 3 trigger requiring sanitization for external AI endpoints.",
+      "relevantModule": "src/risk/engine.ts"
+    },
+    {
+      "id": "TS-026",
+      "name": "Deterministic latency measurement integrity",
+      "suite": "Telemetry Integrity",
+      "status": "PASS",
+      "expected": "Real latencies measured via performance.now() across all executed stages",
+      "actual": "Prefilter: 0.19ms, Sanitize: 0.1ms, Verify: 0.18ms, Total: 0.4ms",
+      "details": "Assures all telemetry latency values are directly measured and not hardcoded mock numbers.",
+      "relevantModule": "src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-027",
+      "name": "AI invocation truthfulness (Zero fabricated inference)",
+      "suite": "Telemetry Integrity",
+      "status": "PASS",
+      "expected": "ai_invoked: false, ai_latency_ms: null, truthful reason string",
+      "actual": "ai_invoked: false, ai_latency_ms: null, reason: \"Deterministic path — AI context not required.\"",
+      "details": "Ensures pipeline does not pretend local AI ran when no validated model is loaded.",
+      "relevantModule": "src/core/pipeline.ts"
+    },
+    {
+      "id": "TS-028",
+      "name": "Runtime platform separation (Target vs Actual Host)",
+      "suite": "Runtime Reporting",
+      "status": "PASS",
+      "expected": "Target platform: Snapdragon X Series; Actual Host: Linux container (Other); QNN: UNAVAILABLE",
+      "actual": "Host OS: Linux, Platform: Other, Env: CONTAINER / NON-TARGET, QNN: UNAVAILABLE",
+      "details": "Validates that the host does not falsely claim Snapdragon NPU or QNN acceleration when executing on x86 container.",
+      "relevantModule": "src/validation/hardwareProbe.ts, src/validation/runtimeProbe.ts"
+    },
+    {
+      "id": "TS-029",
+      "name": "Network measurement truthfulness",
+      "suite": "Telemetry Integrity",
+      "status": "PASS",
+      "expected": "instrumented: true, requestCount: 0, bytesSent: 0",
+      "actual": "instrumented: true, requestCount: 0, bytesSent: 0",
+      "details": "Truthfully instruments local requests without claiming unverifiable system-wide network silence.",
+      "relevantModule": "src/telemetry/networkTracker.ts"
+    }
+  ],
+  "matrixRows": [
+    {
+      "id": "TS-001",
+      "scenario": "Clean technical evidence",
+      "expected": "ALLOW / ALLOWED",
+      "actual": "ALLOW / ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-002",
+      "scenario": "Credential to Public AI",
+      "expected": "SANITIZE / ALLOWED",
+      "actual": "SANITIZE / ALLOWED (Hard Rule 3 precedence over score 100)",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-003",
+      "scenario": "Critical Credential to Public GitHub",
+      "expected": "BLOCK / BLOCKED (Verif PASS)",
+      "actual": "BLOCK / BLOCKED (Verif PASS, Copy DISABLED)",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-004",
+      "scenario": "Internal destination context",
+      "expected": "SANITIZE / ALLOWED (0.6x multiplier)",
+      "actual": "SANITIZE / ALLOWED (Score 68.4)",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-005",
+      "scenario": "Local IDE destination awareness",
+      "expected": "ALLOW / ALLOWED (0.2x multiplier)",
+      "actual": "ALLOW / ALLOWED (Score 22.8)",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-006",
+      "scenario": "Policy variation (CyberLab vs CloudOps vs OpenSource)",
+      "expected": "Context-aware variation",
+      "actual": "CyberLab (45.6/REVIEW) < CloudOps (68.4/SANITIZE) < OpenSource (85.5/BLOCK)",
+      "status": "PASS"
+    },
+    {
+      "id": "TS-007",
+      "scenario": "Verification hold & token bleed",
+      "expected": "VERIFICATION FAILED / HOLD",
+      "actual": "VERIFICATION FAILED (Residual raw token bleed caught)",
+      "status": "PASS"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INV-01",
+      "name": "Deterministic detection remains active",
+      "status": "PASS",
+      "rationale": "Detection registry executes regular expressions and entropy calculations on all inputs before downstream decisions."
+    },
+    {
+      "id": "INV-02",
+      "name": "AI/context analysis cannot directly release sensitive content",
+      "status": "PASS",
+      "rationale": "AI context modifies finding severity modifiers only; final release is strictly mediated by the risk engine and independent verifier."
+    },
+    {
+      "id": "INV-03",
+      "name": "Sanitization does not automatically authorize release",
+      "status": "PASS",
+      "rationale": "Sanitized buffers must pass both independent verification and risk policy non-BLOCK checks before release."
+    },
+    {
+      "id": "INV-04",
+      "name": "Verification is independent of sanitization",
+      "status": "PASS",
+      "rationale": "verifySanitization runs as a decoupled pass rescanning output with fresh regex and token map bleed checks."
+    },
+    {
+      "id": "INV-05",
+      "name": "BLOCK remains release-blocking even when verification passes",
+      "status": "PASS",
+      "rationale": "Validated in TS-003 and TS-017: If decision is BLOCK, release_status is BLOCKED regardless of verifier output."
+    },
+    {
+      "id": "INV-06",
+      "name": "Verification failure blocks release",
+      "status": "PASS",
+      "rationale": "Validated in TS-007 and TS-014: Any failed verifier check halts release in VERIFICATION_HOLD."
+    },
+    {
+      "id": "INV-07",
+      "name": "Clipboard is never silently cleared or overwritten",
+      "status": "PASS",
+      "rationale": "Clipboard writeText is invoked solely upon explicit user button click in TransformationWorkspace and disabled when blocked."
+    },
+    {
+      "id": "INV-08",
+      "name": "Raw sensitive values are not persisted in telemetry",
+      "status": "PASS",
+      "rationale": "Validated in TS-008: raw_value is isolated to transient memory and stripped from findings_metadata and telemetry JSON."
+    },
+    {
+      "id": "INV-09",
+      "name": "Snapdragon/QNN claims require actual runtime validation",
+      "status": "PASS",
+      "rationale": "Validated in TS-028: The system reports QNN UNAVAILABLE on non-target platforms instead of spoofing acceleration."
+    },
+    {
+      "id": "INV-10",
+      "name": "Demo scenarios use the real pipeline",
+      "status": "PASS",
+      "rationale": "Validated in TS-019 through TS-022: All four demo scenarios run through runTraceShieldPipeline without bypass."
+    }
+  ],
+  "discoveredIssues": [],
+  "implementationLimitations": []
+}

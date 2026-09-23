@@ -1,0 +1,6 @@
+{
+  "name": "TraceShield AI 2.0",
+  "description": "On-Device Privacy-First AI Security Layer for Developers & Cyber Teams on Snapdragon",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,64 @@
+THIS REPORT IS VALID ONLY FOR THE MACHINE ON WHICH IT WAS EXECUTED.
+
+======================================================================
+TRACE SHIELD AI 2.0
+WINDOWS / SNAPDRAGON PHYSICAL VALIDATION REPORT
+======================================================================
+
+1. VALIDATION ENVIRONMENT
+   Environment: CONTAINER / NON-TARGET
+   Notice: Executed inside Linux x86_64 container.
+   Physical Snapdragon validation must be executed on a physical Windows 11 ARM64 machine.
+
+2. TARGET HARDWARE
+   Target Architecture: Windows 11 on ARM64 (AArch64)
+   Target Platform:     Qualcomm Snapdragon X Elite / Snapdragon X Plus (Oryon CPU / Adreno GPU / Hexagon NPU)
+
+3. ACTUAL HARDWARE
+   CPU:                 AuthenticAMD x86_64 Processor
+   CPU Manufacturer:    Advanced Micro Devices (AMD)
+   GPU:                 None / Virtualized container
+   Architecture:        x86_64 / Non-ARM (x64)
+   64-Bit OS:           Yes (64-bit)
+   OS:                  Linux (POSIX Container)
+   Hardware Platform:   Other
+   ARM64 Check:         FAIL (Target environment is ARM64)
+
+4. QNN AVAILABILITY
+   QNNExecutionProvider: UNAVAILABLE (NPU execution requires physical Snapdragon hardware and QNN Execution Provider)
+
+5. QNN LIBRARY AVAILABILITY
+   QnnHtp.dll:        NOT CONFIGURED
+   QnnHtpPrepare.dll: NOT CONFIGURED
+   QnnSystem.dll:     NOT CONFIGURED
+   Configured Path:   NONE (Environment variables QNN_SDK_ROOT or QUALCOMM_QNN_DIR are not configured)
+
+6. MODEL AVAILABILITY
+   DBNet / MobileNetV4 OCR: NOT FOUND
+   SmolLM2 Candidate:       NOT FOUND
+   MiniLM Candidate:        NOT FOUND
+   Local Model Policy:      Automatic download prohibited. Zero local models present.
+
+7. ACTUAL EXECUTION BACKEND
+   Active Backend: CPU (Deterministic security pipeline)
+   QNN NPU Claim:  NONE (NPU execution is not claimed when running on CPU)
+
+8. AI INFERENCE STATUS
+   Status: NOT RUN — NO VALIDATED LOCAL MODEL
+   Reason: "No validated local model available. Deterministic path active."
+
+9. CPU FALLBACK
+   CPU Execution: VALIDATED
+   Deterministic Pipeline: PASS (High-speed regex, entropy analysis, and policy gating operating on CPU)
+
+10. NETWORK INSTRUMENTATION
+    TraceShield Application Network: 0 outbound requests / 0 bytes observed (Instrumented application-level probe)
+    Machine-Wide Network:            NOT CLAIMED (Application-level isolation verified)
+
+======================================================================
+SUMMARY STATUS
+======================================================================
+PHYSICAL SNAPDRAGON: NOT VALIDATED
+QNN:                 NOT VALIDATED
+AI MODEL:            NOT VALIDATED
+======================================================================
